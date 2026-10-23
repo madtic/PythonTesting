@@ -1,6 +1,7 @@
 from testing_course.connect_four.connect_four import ConnectFour
 from testing_course.connect_four.connect_four_game import ConnectFourGame
 from testing_course.connect_four.player import Player
+from testing_course.connect_four.connect_four import InvalidMoveError
 
 HELP = """
 Available commands:
@@ -23,7 +24,10 @@ def main() -> None:
 
         match command:
             case "1" | "2" | "3" | "4" | "5" | "6" | "7":
-                game.drop(int(command) - 1)
+                try:
+                    game.drop(int(command) - 1)
+                except InvalidMoveError as e:
+                    print(f"Error: {e}")
             case "r":
                 game.reset(Player.RED)
             case "q":
@@ -35,7 +39,10 @@ def main() -> None:
                 print("Unknown command")
         print(game)
 
-    print(f"GAME OVER - Winner: {game.winner.name}")
+    if game.winner == Player.NONE:
+        print("GAME OVER - Draw!")
+    else:
+        print(f"GAME OVER - Winner: {game.winner.name}")
 
 
 if __name__ == "__main__":
