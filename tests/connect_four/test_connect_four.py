@@ -133,3 +133,7 @@ def test_print_game_board():
     game.drop(0)
     assert "| R | . | . | . | . | . | . |" in str(game)
     assert "Current player: YELLOW" in str(game)
+
+    # Test won game does not print current player
+    game._is_game_over = True
+    assert "Current player" not in str(game)
