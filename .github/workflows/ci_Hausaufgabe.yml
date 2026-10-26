@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [ "Hausaufgabe" ]
+  pull_request:
+    branches: [ "Hausaufgabe" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_COMPILE_BYTECODE: "1"
+  UV_LINK_MODE: copy
+
+jobs:
+  ruff:
+    name: Lint (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv & Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run Ruff Check
+        continue-on-error: true
+        run: uv run ruff check
+
+  ruff-format:
+    name: Format (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv & Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run Ruff Format
+        continue-on-error: true
+        run: uv run ruff format --check
+
+  ty:
+    name: Typechecking (ty)
+    needs: [ruff, ruff-format]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv & Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run Typecheck
+        run: uv run ty check
+
+  pytest:
+    name: Test (Pytest)
+    needs: [ty]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv & Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run Pytest
+        run: uv run pytest
