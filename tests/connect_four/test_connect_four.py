@@ -73,7 +73,7 @@ def test_get_winner_vertical():
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
-    assert game.is_game_over == True
+    assert game.is_game_over
 
 
 def test_get_winner_horizontal():
@@ -91,7 +91,7 @@ def test_get_winner_horizontal():
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
-    assert game.is_game_over == True
+    assert game.is_game_over
 
 
 def test_get_winner_diagonal():

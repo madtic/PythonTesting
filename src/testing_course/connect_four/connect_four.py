@@ -3,8 +3,10 @@ from typing import Protocol
 from testing_course.connect_four.player import Player
 
 #############################
-# Is the Interface for the Connect Four Game. It defines the methods and properties that any implementation of
-# the game should have. The ConnectFourGame class is an example of a concrete implementation of this interface.
+# Is the Interface for the Connect Four Game.
+# It defines the methods and properties that any implementation ofthe game should have.
+# The ConnectFourGame class is an example of a concrete
+# implementation of this interface.
 ################################
 
 
