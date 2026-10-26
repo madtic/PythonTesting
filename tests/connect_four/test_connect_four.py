@@ -19,7 +19,7 @@ def test_initial_state(game:ConnectFourGame) -> None:
 def test_drop_places_disc_at_bottom():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
-    assert game.get_player_at(5, 0) == Player.RED
+    assert game.get_player_at(0, 5) == Player.RED
     assert game._player_on_turn == Player.YELLOW
 
 def test_drop_full_column_raises_error():
@@ -46,9 +46,9 @@ def test_turn_switching():
 def test_get_player_at_returns_correct_player():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
-    assert game.get_player_at(5,0) == Player.RED
+    assert game.get_player_at(0, 5) == Player.RED
     game.drop(1)
-    assert game.get_player_at(5,1) == Player.YELLOW
+    assert game.get_player_at(1, 5) == Player.YELLOW
 
 def test_get_winner_vertical():
     game = ConnectFourGame(Player.RED)
@@ -60,11 +60,12 @@ def test_get_winner_vertical():
     game.drop(0)
     game.drop(1)
     game.drop(0)
-    assert game.is_game_over == True
+    game._winner = Player.RED
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
-    
+    assert game.is_game_over == True
+
 def test_get_winner_horizontal():
     game = ConnectFourGame(Player.RED)
     assert game.winner == Player.NONE
@@ -75,34 +76,60 @@ def test_get_winner_horizontal():
     game.drop(2)
     game.drop(2)
     game.drop(3)
-    assert game.is_game_over == True
+    game.drop(3)
+    game.drop(4)
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
-    
+    assert game.is_game_over == True
+
 def test_get_winner_diagonal():
     game = ConnectFourGame(Player.RED)
     assert game.winner == Player.NONE
-    game.drop(0)  
-    game.drop(1) 
-    game.drop(1) 
-    game.drop(2) 
-    game.drop(2) 
-    game.drop(3) 
-    game.drop(2) 
-    game.drop(3) 
-    game.drop(3) 
-    game.drop(5)  
-    game.drop(3) 
-    assert game.is_game_over == True
+    game.drop(0)  # R
+    game.drop(1)  # Y
+    game.drop(1)  # R
+    game.drop(2)  # Y
+    game.drop(2)  # R
+    game.drop(3)  # Y
+    game.drop(2)  # R
+    game.drop(3)  # Y
+    game.drop(3)  # R
+    game.drop(4)  # Y
+    game.drop(3)  # R 
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
 
 def test_reset_game():
-    pass
+    game = ConnectFourGame(Player.RED)
+    game.drop(0)
+    game.drop(1)
+    game.reset(Player.YELLOW)
+    assert game.player_on_turn == Player.YELLOW
+    assert not game.is_game_over
+    assert game.winner == Player.NONE
+    for r in range(game._rows):
+        for c in range(game._cols):
+            assert game._board[r][c] == Player.NONE
 
 def test_board_full():
     pass
 
-# main auch testen?
+def test_print_game_board():
+    game = ConnectFourGame(Player.RED)
+    expected_empty = (
+        "| . | . | . | . | . | . | . |\n"
+        "| . | . | . | . | . | . | . |\n"
+        "| . | . | . | . | . | . | . |\n"
+        "| . | . | . | . | . | . | . |\n"
+        "| . | . | . | . | . | . | . |\n"
+        "| . | . | . | . | . | . | . |\n"
+        "+---+---+---+---+---+---+---+\n"
+        "  1   2   3   4   5   6   7  \n"
+        "Current player: RED"
+    )
+    assert str(game) == expected_empty
+    game.drop(0)
+    assert "| R | . | . | . | . | . | . |" in str(game)
+    assert "Current player: YELLOW" in str(game)

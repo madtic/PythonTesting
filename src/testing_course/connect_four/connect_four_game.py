@@ -8,12 +8,29 @@ class ConnectFourGame:
         self._winner = Player.NONE
         self._rows = 6
         self._cols = 7
-       # Initialize an empty 6x7 board
+        # Initialize an empty 6x7 board
         self._board = [[Player.NONE for _ in range(self._cols)] for _ in range(self._rows)]
-        
 
     def get_player_at(self, row: int, col: int) -> Player:
         return self._board[row][col]
+
+    def __str__(self) -> str:
+        symbol_map = {
+            Player.NONE: ".",
+            Player.RED: "R",
+            Player.YELLOW: "Y",
+        }
+        lines = []
+        for row in self._board:
+            lines.append("| " + " | ".join(symbol_map[cell] for cell in row) + " |")
+        lines.append("+---" * self._cols + "+")
+        lines.append("  " + "   ".join(str(i + 1) for i in range(self._cols)) + "  ")
+        if not self.is_game_over:
+            lines.append(f"Current player: {self._player_on_turn.name}")
+        return "\n".join(lines)
+
+    def print_board(self) -> None:
+        print(self)
 
     @property
     def player_on_turn(self) -> Player:
@@ -23,7 +40,7 @@ class ConnectFourGame:
     def is_game_over(self) -> bool:
         if self._is_game_over:
             return True
-    
+
         for player in (Player.RED, Player.YELLOW): 
             # Horizontal 
             for row in range(self._rows):
@@ -35,7 +52,7 @@ class ConnectFourGame:
                         self._winner = player
                         self._is_game_over = True
                         return True
-    
+
             # Vertikal 
             for row in range(self._rows - 3):
                 for col in range(self._cols):
@@ -46,7 +63,7 @@ class ConnectFourGame:
                         self._winner = player
                         self._is_game_over = True
                         return True
-    
+
             # Diagonal links-oben nach rechts-unten (\)
             for row in range(self._rows - 3):
                 for col in range(self._cols - 3):
@@ -57,7 +74,7 @@ class ConnectFourGame:
                         self._winner = player
                         self._is_game_over = True
                         return True
-    
+
             # Diagonal links-unten nach rechts-oben (/)
             for row in range(3, self._rows):
                 for col in range(self._cols - 3):
@@ -68,7 +85,7 @@ class ConnectFourGame:
                         self._winner = player
                         self._is_game_over = True
                         return True 
-    
+
         # Unentschieden (Spielfeld komplett voll)
         is_full = all(
             self._board[r][c] != Player.NONE 
@@ -79,7 +96,7 @@ class ConnectFourGame:
             self._winner = Player.NONE
             self._is_game_over = True
             return True
-    
+
         return False 
 
     @property
@@ -87,7 +104,10 @@ class ConnectFourGame:
         return self._winner
 
     def reset(self, player_on_turn: Player) -> None:
-        raise NotImplementedError
+        self._player_on_turn = player_on_turn
+        self._is_game_over = False
+        self._winner = Player.NONE
+        self._board = [[Player.NONE for _ in range(self._cols)] for _ in range(self._rows)]
 
     def drop(self, col: int) -> None:
         # Check if the column is valid
