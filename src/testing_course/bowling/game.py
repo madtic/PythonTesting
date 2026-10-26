@@ -12,12 +12,11 @@ class Game:
             if self._rolls[roll_index] == 10:
                 score += 10 + self._rolls[roll_index + 1] + self._rolls[roll_index + 2]
                 roll_index += 1
-            elif self._rolls[roll_index] + self._rolls[roll_index +1] == 10:
+            elif self._rolls[roll_index] + self._rolls[roll_index + 1] == 10:
                 score += 10 + self._rolls[roll_index + 2]
                 roll_index += 2
             else:
-                score += self._rolls[roll_index] + self._rolls[roll_index +1]
+                score += self._rolls[roll_index] + self._rolls[roll_index + 1]
                 roll_index += 2
-            
-        return score
 
+        return score

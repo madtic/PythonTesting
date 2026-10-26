@@ -1,12 +1,15 @@
 import pytest
+
 from testing_course.connect_four.connect_four_game import ConnectFourGame
 from testing_course.connect_four.player import Player
+
 
 @pytest.fixture
 def game() -> ConnectFourGame:
     return ConnectFourGame(Player.RED)
 
-def test_initial_state(game:ConnectFourGame) -> None:
+
+def test_initial_state(game: ConnectFourGame) -> None:
     for row in range(6):
         for col in range(7):
             assert game.get_player_at(col, row) == Player.NONE
@@ -16,11 +19,13 @@ def test_initial_state(game:ConnectFourGame) -> None:
     assert game._rows == 6
     assert game._cols == 7
 
+
 def test_drop_places_disc_at_bottom():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
     assert game.get_player_at(0, 5) == Player.RED
     assert game._player_on_turn == Player.YELLOW
+
 
 def test_drop_full_column_raises_error():
     game = ConnectFourGame(Player.RED)
@@ -29,12 +34,14 @@ def test_drop_full_column_raises_error():
     with pytest.raises(ValueError, match="Column is full"):
         game.drop(0)
 
+
 def test_drop_invalid_column_raises_error():
     game = ConnectFourGame(Player.RED)
     with pytest.raises(ValueError, match="Invalid column"):
         game.drop(-1)
     with pytest.raises(ValueError, match="Invalid column"):
         game.drop(7)
+
 
 def test_turn_switching():
     game = ConnectFourGame(Player.RED)
@@ -43,12 +50,14 @@ def test_turn_switching():
     game.drop(1)
     assert game._player_on_turn == Player.RED
 
+
 def test_get_player_at_returns_correct_player():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
     assert game.get_player_at(0, 5) == Player.RED
     game.drop(1)
     assert game.get_player_at(1, 5) == Player.YELLOW
+
 
 def test_get_winner_vertical():
     game = ConnectFourGame(Player.RED)
@@ -65,6 +74,7 @@ def test_get_winner_vertical():
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
     assert game.is_game_over == True
+
 
 def test_get_winner_horizontal():
     game = ConnectFourGame(Player.RED)
@@ -83,6 +93,7 @@ def test_get_winner_horizontal():
     assert game.winner != Player.NONE
     assert game.is_game_over == True
 
+
 def test_get_winner_diagonal():
     game = ConnectFourGame(Player.RED)
     assert game.winner == Player.NONE
@@ -96,10 +107,11 @@ def test_get_winner_diagonal():
     game.drop(3)  # Y
     game.drop(3)  # R
     game.drop(4)  # Y
-    game.drop(3)  # R 
+    game.drop(3)  # R
     assert game.winner == Player.RED
     assert game.winner != Player.YELLOW
     assert game.winner != Player.NONE
+
 
 def test_reset_game():
     game = ConnectFourGame(Player.RED)
@@ -114,8 +126,59 @@ def test_reset_game():
         for c in range(game._cols):
             assert game._board[r][c] == Player.NONE
 
+
 def test_board_full():
-    pass
+    game = ConnectFourGame(Player.RED)
+    R = Player.RED
+    Y = Player.YELLOW
+    game._board = [
+        [R, Y, R, Y, R, Y, R],
+        [R, Y, R, Y, R, Y, R],
+        [Y, R, Y, R, Y, R, Y],
+        [Y, R, Y, R, Y, R, Y],
+        [R, Y, R, Y, R, Y, R],
+        [R, Y, R, Y, R, Y, R],
+    ]
+    assert game.is_game_over is True
+    assert game.winner == Player.NONE
+    assert game.is_tie is True
+    with pytest.raises(ValueError, match="Column is full"):
+        game.drop(0)
+
+
+def test_tie_when_board_is_full_and_no_winner():
+    game = ConnectFourGame(Player.RED)
+    assert game.is_tie is False
+
+    # Board is filled without any 4-in-a-row
+    R = Player.RED
+    Y = Player.YELLOW
+    game._board = [
+        [R, Y, R, Y, R, Y, R],
+        [R, Y, R, Y, R, Y, R],
+        [Y, R, Y, R, Y, R, Y],
+        [Y, R, Y, R, Y, R, Y],
+        [R, Y, R, Y, R, Y, R],
+        [R, Y, R, Y, R, Y, R],
+    ]
+    assert game.is_tie is True
+    assert game.is_game_over is True
+    assert game.winner == Player.NONE
+
+
+def test_tie_is_false_when_player_wins():
+    game = ConnectFourGame(Player.RED)
+    game.drop(0)
+    game.drop(1)
+    game.drop(0)
+    game.drop(1)
+    game.drop(0)
+    game.drop(1)
+    game.drop(0)
+    assert game.is_game_over is True
+    assert game.winner == Player.RED
+    assert game.is_tie is False
+
 
 def test_print_game_board():
     game = ConnectFourGame(Player.RED)
@@ -144,6 +207,7 @@ def test_print_game_board():
     # Test won game does not print current player
     game._is_game_over = True
     assert "Current player" not in str(game)
+
 
 def test_turn_counting():
     game = ConnectFourGame(Player.RED)
