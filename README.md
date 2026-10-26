@@ -1,3 +1,13 @@
+# Fork of PythonTesting
+
+## Branches:
+- [main] unchanged fork of PythonTesting
+- [Vorlesung] code aus der Vorlesung
+- [Hausaufgabe] Hausaufgabe Connect 4 Pair Programming Lösen
+
+by S2510828014 | Thomas.Schaetz  & S2510828016|Tichelmann Michael
+
+
 # Testing and TDD with Python
 
 Exercises for learning unit testing and test-driven development with [pytest](https://docs.pytest.org).
