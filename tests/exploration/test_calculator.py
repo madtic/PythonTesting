@@ -8,17 +8,20 @@ def calculator() -> Calculator:
     return Calculator()
 
 
-def test_add_returns_correct_result(calculator: Calculator) -> None:
-    # Arrange
-    x = 5
-    y = 2
-    expected = 7
-
-    # Act
-    actual = calculator.add(x, y)
-
-    # Assert
-    assert actual == expected
+@pytest.mark.parametrize(
+    ("x", "y", "expected"),
+    [
+        pytest.param(1, 2, 3, id="positive"),
+        pytest.param(-4, -6, -10, id="negative"),
+        pytest.param(-2, 2, 0, id="cancel-out"),
+        pytest.param(0.1, 0.2, pytest.approx(0.3), id="floats"),
+        pytest.param(10**30, 1, 10**30 + 1, id=""),
+    ],
+)
+def test_add_returns_correct_result(
+    calculator: Calculator, x: float, y: float, expected: float
+) -> None:
+    assert calculator.add(x, y) == expected
 
 
 def test_subtract_returns_correct_result(calculator: Calculator) -> None:
@@ -33,14 +36,14 @@ def test_divide_by_zero_raises_zero_division_error(calculator: Calculator) -> No
 @pytest.mark.parametrize(
     ("x", "y", "expected"),
     [
-        pytest.param(1, 2, 3, id="positive"),
-        pytest.param(-4, -6, -10, id="negative"),
-        pytest.param(-2, 2, 0, id="cancel-out"),
-        pytest.param(0.1, 0.2, pytest.approx(0.3), id="floats"),
-        pytest.param(10**30, 1, 10**30 + 1, id=""),
+        pytest.param(1, 2, 2, id="positive"),
+        pytest.param(-4, -6, 24, id="negative"),
+        pytest.param(-2, 2, -4, id="cancel-out"),
+        pytest.param(0.1, 0.2, pytest.approx(0.02), id="floats"),
+        pytest.param(10**30, 1, 10**30, id=""),
     ],
 )
 def test_multiply_returns_correct_result(
-    calculator: Calculator, x: int, y: int, expected: int
+    calculator: Calculator, x: float, y: float, expected: float
 ) -> None:
     assert calculator.multiply(x, y) == expected
