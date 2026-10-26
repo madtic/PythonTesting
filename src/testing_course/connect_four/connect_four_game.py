@@ -8,11 +8,20 @@ class ConnectFourGame:
         self._winner = Player.NONE
         self._rows = 6
         self._cols = 7
+        self._drops = 0
         # Initialize an empty 6x7 board
         self._board = [[Player.NONE for _ in range(self._cols)] for _ in range(self._rows)]
 
     def get_player_at(self, row: int, col: int) -> Player:
         return self._board[row][col]
+
+    @property
+    def turn(self) -> int:
+        return (self._drops // 2) + 1
+
+    @property
+    def round(self) -> int:
+        return self.turn
 
     def __str__(self) -> str:
         symbol_map = {
@@ -20,7 +29,7 @@ class ConnectFourGame:
             Player.RED: "R",
             Player.YELLOW: "Y",
         }
-        lines = []
+        lines = [f"Turn: {self.turn}"]
         for row in self._board:
             lines.append("| " + " | ".join(symbol_map[cell] for cell in row) + " |")
         lines.append("+---" * self._cols + "+")
@@ -107,6 +116,7 @@ class ConnectFourGame:
         self._player_on_turn = player_on_turn
         self._is_game_over = False
         self._winner = Player.NONE
+        self._drops = 0
         self._board = [[Player.NONE for _ in range(self._cols)] for _ in range(self._rows)]
 
     def drop(self, col: int) -> None:
@@ -118,6 +128,7 @@ class ConnectFourGame:
         for row in reversed(range(self._rows)):
             if self._board[row][col] == Player.NONE:
                 self._board[row][col] = self._player_on_turn
+                self._drops += 1
                 # Switch turns
                 self._player_on_turn = Player.YELLOW if self._player_on_turn == Player.RED else Player.RED
                 return

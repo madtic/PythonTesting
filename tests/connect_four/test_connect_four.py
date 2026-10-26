@@ -109,6 +109,7 @@ def test_reset_game():
     assert game.player_on_turn == Player.YELLOW
     assert not game.is_game_over
     assert game.winner == Player.NONE
+    assert game.turn == 1
     for r in range(game._rows):
         for c in range(game._cols):
             assert game._board[r][c] == Player.NONE
@@ -119,6 +120,7 @@ def test_board_full():
 def test_print_game_board():
     game = ConnectFourGame(Player.RED)
     expected_empty = (
+        "Turn: 1\n"
         "| . | . | . | . | . | . | . |\n"
         "| . | . | . | . | . | . | . |\n"
         "| . | . | . | . | . | . | . |\n"
@@ -131,9 +133,26 @@ def test_print_game_board():
     )
     assert str(game) == expected_empty
     game.drop(0)
+    assert str(game).startswith("Turn: 1\n")
     assert "| R | . | . | . | . | . | . |" in str(game)
     assert "Current player: YELLOW" in str(game)
+
+    game.drop(1)
+    assert str(game).startswith("Turn: 2\n")
+    assert "Current player: RED" in str(game)
 
     # Test won game does not print current player
     game._is_game_over = True
     assert "Current player" not in str(game)
+
+def test_turn_counting():
+    game = ConnectFourGame(Player.RED)
+    assert game.turn == 1
+    game.drop(0)  # Red drops
+    assert game.turn == 1
+    game.drop(0)  # Yellow drops -> 1 round used
+    assert game.turn == 2
+    game.drop(1)  # Red drops
+    assert game.turn == 2
+    game.drop(1)  # Yellow drops -> 2 rounds used
+    assert game.turn == 3
