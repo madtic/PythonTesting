@@ -12,7 +12,7 @@ def game() -> ConnectFourGame:
 def test_initial_state(game: ConnectFourGame) -> None:
     for row in range(6):
         for col in range(7):
-            assert game.get_player_at(col, row) == Player.NONE
+            assert game.get_player_at(row, col) == Player.NONE
     assert game._player_on_turn == Player.RED
     assert not game._is_game_over
     assert game._winner == Player.NONE
@@ -23,7 +23,7 @@ def test_initial_state(game: ConnectFourGame) -> None:
 def test_drop_places_disc_at_bottom():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
-    assert game.get_player_at(0, 5) == Player.RED
+    assert game.get_player_at(5, 0) == Player.RED
     assert game._player_on_turn == Player.YELLOW
 
 
@@ -54,9 +54,9 @@ def test_turn_switching():
 def test_get_player_at_returns_correct_player():
     game = ConnectFourGame(Player.RED)
     game.drop(0)
-    assert game.get_player_at(0, 5) == Player.RED
+    assert game.get_player_at(5, 0) == Player.RED
     game.drop(1)
-    assert game.get_player_at(1, 5) == Player.YELLOW
+    assert game.get_player_at(5, 1) == Player.YELLOW
 
 
 def test_get_winner_vertical():
