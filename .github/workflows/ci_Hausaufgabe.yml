@@ -62,8 +62,11 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install dependencies
+        run: uv sync --locked
+
       - name: Audit dependencies
-        run: uv pip audit
+        run: uv run pip-audit
 
   ty:
     name: Typechecking (ty)
