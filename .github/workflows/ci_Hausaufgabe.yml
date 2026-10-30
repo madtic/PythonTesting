@@ -72,13 +72,12 @@ jobs:
           uv tree
           
           echo "=== Running Detailed Pip Audit ==="
-          # Standard output in console mit Verbose Details
           uv run pip-audit --verbose || true
           
-          # Generiere Markdown Summary für das GitHub Workflow UI
           echo "### 🛡️ Security Audit Report" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          uv run pip-audit --format=desc >> $GITHUB_STEP_SUMMARY 2>&1 || true
+          # Korrigiert: --format=markdown mit --desc
+          uv run pip-audit --format=markdown --desc >> $GITHUB_STEP_SUMMARY 2>&1 || true
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Enforce Audit Pass
