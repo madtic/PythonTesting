@@ -97,6 +97,15 @@ jobs:
             --cov-report=xml:coverage.xml \
             --junitxml=junit.xml
 
+      - name: Generate Coverage Markdown Summary
+        if: always()
+        run: |
+          uv run --with pycobertura pycobertura show --format text coverage.xml > coverage_summary.txt || true
+          echo "### 📊 Code Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage_summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
       - name: Upload Coverage & Test Reports
         uses: actions/upload-artifact@v4
         if: always()
