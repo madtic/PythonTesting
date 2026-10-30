@@ -29,9 +29,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Run Ruff Check
+      - name: Run Ruff Check (Verbose)
         continue-on-error: true
-        run: uv run ruff check
+        run: uv run ruff check --verbose
 
   ruff-format:
     name: Format (Ruff)
@@ -47,9 +47,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Run Ruff Format
+      - name: Run Ruff Format Check (Verbose)
         continue-on-error: true
-        run: uv run ruff format --check
+        run: uv run ruff format --check --verbose
 
   audit:
     name: Security Audit
@@ -65,8 +65,24 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Audit dependencies
-        run: uvx pip-audit
+      - name: Detailed Dependency & Security Audit
+        if: always()
+        run: |
+          echo "=== Installed Packages Overview ==="
+          uv tree
+          
+          echo "=== Running Detailed Pip Audit ==="
+          # Standard output in console mit Verbose Details
+          uv run pip-audit --verbose || true
+          
+          # Generiere Markdown Summary für das GitHub Workflow UI
+          echo "### 🛡️ Security Audit Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          uv run pip-audit --format=desc >> $GITHUB_STEP_SUMMARY 2>&1 || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Enforce Audit Pass
+        run: uv run pip-audit
 
   ty:
     name: Typechecking (ty)
@@ -109,8 +125,10 @@ jobs:
       - name: Run Pytest with Coverage & JUnit
         run: |
           uv run pytest \
+            -vv \
+            --durations=10 \
             --cov \
-            --cov-report=term \
+            --cov-report=term-missing \
             --cov-report=xml:coverage.xml \
             --junitxml=junit.xml
 
@@ -137,3 +155,5 @@ jobs:
         if: always()
         with:
           report_paths: 'junit.xml'
+          detailed_summary: true
+          include_passed: true
